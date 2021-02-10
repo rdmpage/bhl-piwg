@@ -1,2 +1,3 @@
-# bhl-piwg
-BHL Persistent Identifier Working Group
+# BHL Persistent Identifier Working Group
+
+Code related to BHL PIWG.
