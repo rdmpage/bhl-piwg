@@ -156,6 +156,14 @@ function reference_to_ris($reference)
 }
 
 //----------------------------------------------------------------------------------------
+// http://stackoverflow.com/a/5996888/9684
+function translate_quoted($string) {
+  $search  = array("\\t", "\\n", "\\r");
+  $replace = array( "\t",  "\n",  "\r");
+  return str_replace($search, $replace, $string);
+}
+
+//----------------------------------------------------------------------------------------
 
 
 
@@ -176,10 +184,15 @@ $bhl_pages = array();
 $file_handle = fopen($filename, "r");
 while (!feof($file_handle)) 
 {
-	$line = trim(fgets($file_handle));
+	// $line = trim(fgets($file_handle));
+	// $row = explode("\t",$line);
 	
-		
-	$row = explode("\t",$line);
+	$row = fgetcsv(
+		$file_handle, 
+		0, 
+		"\t",
+		translate_quoted('"') 
+		);
 	
 	//print_r($row);
 	
@@ -245,7 +258,10 @@ while (!feof($file_handle))
 				}
 			}
 		
-			print_r($obj);
+			if (0)
+			{
+				print_r($obj);
+			}
 			
 			// clean up
 			
