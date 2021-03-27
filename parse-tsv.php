@@ -167,6 +167,8 @@ $filename = 'BHL Vol 1-4 Bulletin of The African Bird Club - Sheet1.tsv';
 $filename = 'BHL Batch #2 Bulletin of The African Bird Club v.5 to v.24_no.1 - Sheet1.tsv';
 $filename = '22.2.tsv';
 
+$filename = 'BHL Bulletin of the British Museum (Natural History). Geology. Supplement. - Sheet1.tsv';
+
 
 $bhl_pages = array();
 
@@ -200,16 +202,79 @@ while (!feof($file_handle))
 			{
 				if ($v != '')
 				{
-					$obj->{$headings[$k]} = $v;
+					$heading = $headings[$k];
+					
+					// translation...
+					
+					switch ($heading)
+					{
+						case 'ArticleTitle':
+							$heading = 'title';
+							break;
+
+						case 'FullTitle':
+							$heading = 'journal';
+							break;
+
+						case 'Year':
+						case 'Volume':
+							$heading = strtolower($heading);
+							break;
+
+						case 'StartPageNo':
+							$heading = 'spage';
+							break;
+
+						case 'EndPageNo':
+							$heading = 'epage';
+							break;
+							
+
+						case 'Authors':
+							$heading = 'authors';
+							break;
+
+					
+						default:
+							break;
+					}
+				
+				
+				
+					$obj->{$heading} = $v;
 				}
 			}
 		
-			// print_r($obj);
+			print_r($obj);
 			
 			// clean up
 			
 			
 			$obj->genre = 'article';
+			
+			if (isset($obj->journal) && !isset($obj->issn))
+			{
+				switch($obj->journal)
+				{
+					case 'Bulletin of the British Museum (Natural History). Geology. Supplement.':
+						$obj->issn = '0524-644X';
+						break;
+				
+					default:
+						break;
+				}
+			}
+			
+
+
+			if (isset($obj->ArticleDate))
+			{
+				$dateTime = date_create_from_format('F d, Y', $obj->ArticleDate . ', ' . $obj->year);
+				$obj->date = date_format($dateTime, 'Y-m-d');
+				
+			
+			}
+			
 
 			
 			if (isset($obj->authors))
@@ -229,21 +294,27 @@ while (!feof($file_handle))
 				unset($obj->year);
 			}
 			
+			// Which column is the BHL PageID
 			$bhl_key = '';
 			
 			if (isset($obj->{'BHL URL: start page'}))
 			{
 				$bhl_key = 'BHL URL: start page';
 			}
+
+			if (isset($obj->StartPageID))
+			{
+				$bhl_key = 'StartPageID';
+			}
 			
 
-			if ($bhl_key != '' && isset($obj->{$bhl_key}))
+			if (isset($obj->{$bhl_key}))
 			{
 				$PageID = $obj->{$bhl_key};
 				$PageID = preg_replace('/https?:\/\/(www.)?biodiversitylibrary.org\/page\//', '', $PageID);
 				
 				$obj->url = $obj->{$bhl_key};
-				$obj->url = str_replace('https', 'http', $obj->url);
+				$obj->url = 'http://www.biodiversitylibrary.org/page/' . $PageID;
 				
 				if (!isset($bhl_pages[$PageID]))
 				{
