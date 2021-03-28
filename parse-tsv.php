@@ -176,7 +176,7 @@ $filename = 'BHL Batch #2 Bulletin of The African Bird Club v.5 to v.24_no.1 - S
 $filename = '22.2.tsv';
 
 $filename = 'BHL Bulletin of the British Museum (Natural History). Geology. Supplement. - Sheet1.tsv';
-
+$filename = 'BHL Bulletin of the Natural History Museum (Natural History). Historical Series. - Sheet1.tsv';
 
 $bhl_pages = array();
 
@@ -233,6 +233,10 @@ while (!feof($file_handle))
 						case 'Volume':
 							$heading = strtolower($heading);
 							break;
+							
+						case 'No.':
+							$heading = 'issue';
+							break;							
 
 						case 'StartPageNo':
 							$heading = 'spage';
@@ -275,6 +279,11 @@ while (!feof($file_handle))
 					case 'Bulletin of the British Museum (Natural History). Geology. Supplement.':
 						$obj->issn = '0524-644X';
 						break;
+
+					case 'Bulletin of the Natural History Museum (Natural History). Historical Series.':
+						$obj->issn = '0068-2306';
+						break;
+
 				
 					default:
 						break;
@@ -341,8 +350,24 @@ while (!feof($file_handle))
 			}
 			
 			//print_r($obj);
-
-			echo reference_to_ris($obj);
+			
+			
+			$go = true;
+			
+			if (isset($obj->ArticleID))
+			{
+				$go = false;
+			}
+			
+			if (isset($obj->{'BioStor ID'}))
+			{
+				$go = false;
+			}
+			
+			if ($go)
+			{
+				echo reference_to_ris($obj);
+			}
 			
 			
 		}
