@@ -178,6 +178,8 @@ $filename = '22.2.tsv';
 $filename = 'BHL Bulletin of the British Museum (Natural History). Geology. Supplement. - Sheet1.tsv';
 $filename = 'BHL Bulletin of the Natural History Museum (Natural History). Historical Series. - Sheet1.tsv';
 
+$filename = 'The Naturalist Miscellany Article Data March 2021 - Sheet1.tsv';
+
 $bhl_pages = array();
 
 
@@ -234,6 +236,7 @@ while (!feof($file_handle))
 							$heading = strtolower($heading);
 							break;
 							
+						case 'Issue':
 						case 'No.':
 							$heading = 'issue';
 							break;							
@@ -250,6 +253,21 @@ while (!feof($file_handle))
 						case 'Authors':
 							$heading = 'authors';
 							break;
+
+						case 'Date':
+							$heading = 'date';
+							break;
+
+						// Naturalist's Miscc
+						/*
+						case 'StartPageBHLID':
+							$heading = 'spage';
+							break;
+							
+						case 'EndPageBHLID':
+							$heading = 'epage';
+							break;
+						*/
 
 					
 						default:
@@ -292,13 +310,6 @@ while (!feof($file_handle))
 			
 
 
-			if (isset($obj->ArticleDate))
-			{
-				$dateTime = date_create_from_format('F d, Y', $obj->ArticleDate . ', ' . $obj->year);
-				$obj->date = date_format($dateTime, 'Y-m-d');
-				
-			
-			}
 			
 
 			
@@ -308,6 +319,13 @@ while (!feof($file_handle))
 				$authorstring = str_replace (' and ', ';', $authorstring);
 				$obj->authors = explode(';', $authorstring);				
 			}
+
+			if (isset($obj->ArticleDate))
+			{
+				$dateTime = date_create_from_format('F d, Y', $obj->ArticleDate . ', ' . $obj->year);
+				$obj->date = date_format($dateTime, 'Y-m-d');
+			}
+
 
 			if (isset($obj->date))
 			{
@@ -331,6 +349,11 @@ while (!feof($file_handle))
 			{
 				$bhl_key = 'StartPageID';
 			}
+
+			if (isset($obj->StartPageBHLID))
+			{
+				$bhl_key = 'StartPageBHLID';
+			}
 			
 
 			if (isset($obj->{$bhl_key}))
@@ -349,6 +372,22 @@ while (!feof($file_handle))
 				
 			}
 			
+			// Nat Misc
+			// we use PageIDs as page numbers,
+			// will need to fix BioStor code to handle pages that are actually BHL Page IDs
+			if (isset($obj->StartPageBHLID))
+			{
+				$obj->spage = $obj->StartPageBHLID;
+				
+				if (isset($obj->EndPageBHLID))
+				{
+					$obj->epage = $obj->EndPageBHLID;
+
+				}
+			}
+			
+			
+			
 			//print_r($obj);
 			
 			
@@ -358,6 +397,12 @@ while (!feof($file_handle))
 			{
 				$go = false;
 			}
+			
+			if (isset($obj->BHLSegmentID))
+			{
+				$go = false;
+			}
+			
 			
 			if (isset($obj->{'BioStor ID'}))
 			{
@@ -377,11 +422,16 @@ while (!feof($file_handle))
 }	
 
 // Check for articles that start on same BHL page
+
+$duplicates = array();
+
 foreach ($bhl_pages as $PageID => $articles)
 {
 	if (count($articles) > 1)
 	{
 		echo "Duplicates http://www.biodiversitylibrary.org/page/$PageID\n";
+		
+		$duplicates[] = $PageID;
 		
 		print_r($articles);
 		
@@ -412,5 +462,7 @@ foreach ($bhl_pages as $PageID => $articles)
 	}
 
 }
+
+print_r($duplicates);
 
 
