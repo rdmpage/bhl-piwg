@@ -384,6 +384,8 @@ while (!feof($file_handle))
 					$obj->epage = $obj->EndPageBHLID;
 
 				}
+				
+				$obj->journal = "The Naturalist's Miscellany";
 			}
 			
 			
