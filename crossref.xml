@@ -1,0 +1,51 @@
+<doi_batch xmlns="http://www.crossref.org/schema/4.4.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="4.4.2" xsi:schemaLocation="http://www.crossref.org/schema/4.4.2 http://www.crossref.org/schema/deposit/crossref4.4.2.xsd">
+<head>
+<doi_batch_id>20210331010005.bhl.212389</doi_batch_id>
+<timestamp>202103310100057124</timestamp>
+<depositor>
+<depositor_name>BHLUser</depositor_name>
+<email_address>mike.lichtenberg@mobot.org</email_address>
+</depositor>
+<registrant>Biodiversity Heritage Library</registrant>
+</head>
+<body>
+<journal>
+<journal_metadata>
+<full_title>Bulletin of the African Bird Club</full_title>
+<issn media_type="print">1352-481X</issn>
+</journal_metadata>
+<journal_issue>
+<publication_date media_type="print">
+<year>2015</year>
+</publication_date>
+<journal_volume>
+<volume>22</volume>
+</journal_volume>
+<issue>2</issue>
+</journal_issue>
+<journal_article publication_type="full_text">
+<titles>
+<title>Aberrant Grey-backed Camaroptera in Cameroon</title>
+</titles>
+<contributors>
+<person_name sequence="first" contributor_role="author">
+<given_name>Christer G</given_name>
+<surname>Wiklund</surname>
+<ORCID authenticated="false">https://orcid.org/0000-0003-3898-0289</ORCID>
+</person_name>
+</contributors>
+<publication_date media_type="print">
+<year>2015</year>
+</publication_date>
+<pages>
+<first_page>234</first_page>
+<last_page>235</last_page>
+</pages>
+<doi_data>
+<doi>10.5962/p.310209</doi>
+<resource>https://www.biodiversitylibrary.org/part/310209</resource>
+</doi_data>
+</journal_article>
+</journal>
+</body>
+</doi_batch>
