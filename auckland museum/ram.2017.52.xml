@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doi_records>
+    <doi_record owner="10.32912" timestamp="2019-11-24 20:11:03">
+        <crossref>
+            <journal>
+                <journal_metadata>
+                    <full_title>Records of the Auckland Museum</full_title>
+                    <abbrev_title>RAM</abbrev_title>
+                    <issn media_type="print">11749202</issn>
+                    <issn media_type="electronic">24228567</issn>
+                    <doi_data>
+                        <doi>10.32912/ram</doi>
+                        <resource>https://www.aucklandmuseum.com/discover/research/publications/records</resource>
+                    </doi_data>
+                </journal_metadata>
+                <journal_issue>
+                    <publication_date media_type="print">
+                        <month>12</month>
+                        <day>15</day>
+                        <year>2017</year>
+                    </publication_date>
+                    <publication_date media_type="online">
+                        <month>01</month>
+                        <day>01</day>
+                        <year>2018</year>
+                    </publication_date>
+                    <journal_volume>
+                        <volume>52</volume>
+                    </journal_volume>
+                    <doi_data>
+                        <doi>10.32912/ram.2017.52</doi>
+                        <resource>https://www.aucklandmuseum.com/discover/research/publications/records/vol52</resource>
+                    </doi_data>
+                </journal_issue>
+                <journal_article publication_type="full_text">
+                    <titles>
+                        <title>“Children First” – The Motherhood of Man Movement and single motherhood in 1940s and 1950s New Zealand</title>
+                    </titles>
+                    <contributors>
+                        <organization sequence="first" contributor_role="author">Auckland War Memorial Museum</organization>
+                        <person_name sequence="first" contributor_role="author">
+                            <given_name>Ione</given_name>
+                            <surname>Cussen</surname>
+                        </person_name>
+                    </contributors>
+                    <publication_date media_type="print">
+                        <month>12</month>
+                        <day>15</day>
+                        <year>2017</year>
+                    </publication_date>
+                    <publication_date media_type="online">
+                        <month>01</month>
+                        <day>01</day>
+                        <year>2018</year>
+                    </publication_date>
+                    <pages>
+                        <first_page>1</first_page>
+                        <last_page>8</last_page>
+                    </pages>
+                    <doi_data>
+                        <doi>10.32912/ram.2017.52.1</doi>
+                        <resource>https://www.aucklandmuseum.com/discover/research/publications/records/vol52/motherhood-man</resource>
+                    </doi_data>
+                </journal_article>
+            </journal>
+        </crossref>
+    </doi_record>
+</doi_records>

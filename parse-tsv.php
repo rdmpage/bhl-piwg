@@ -1,5 +1,9 @@
 <?php
 
+// Parse a TSV file and output RIS.
+
+
+
 error_reporting(E_ALL);
 
 //----------------------------------------------------------------------------------------
@@ -180,7 +184,37 @@ $filename = 'BHL Bulletin of the Natural History Museum (Natural History). Histo
 
 $filename = 'The Naturalist Miscellany Article Data March 2021 - Sheet1.tsv';
 
+$filename = 'BHL A specimen of the botany of New Holland - Sheet1.tsv';
+
+$filename = 'BHL Zoology of New Holland - Sheet1.tsv';
+
+$filename = 'BHL Gould A Monograph of the Macropodidae - Sheet1.tsv';
+$filename = 'BHL Gould The Mammals of Australia - Sheet1.tsv';
+$filename = 'BHL Gould The Birds of Australia - Sheet1.tsv';
+
+// BM(NH)
+$filename = 'BHL Bulletin of the British Museum (Natural History). Geology. - Sheet1.tsv';
+$filename = 'BHL Bulletin of the Natural History Museum. Botany series. - Sheet1.tsv';
+$filename = 'BHL Bulletin of the British Museum (Natural History). Entomology. Supplement. - Sheet1.tsv';
+
+$filename = 'BHL Bulletin of the Natural History Museum. Geology series. - Sheet1-2.tsv';
+$filename = 'BHL Bulletin of the British Museum (Natural History). Mineralogy. - Sheet1.tsv';
+$filename = 'BHL Bulletin of the British Museum (Natural History). Zoology - Sheet1.tsv';
+
+$filename = 'BHL The mammals of Australia (Krefft, Scott & Forde) - Sheet1.tsv';
+
 $bhl_pages = array();
+
+//----------------------------------------------------------------------------------------
+// Vital to decide whether we are going to update existing records or add new ones
+// If new ones, set mode to "add" and run ~/Dropbox/Development/import-html.php 
+// on the RIS file to add to BioStor
+//
+// If updating existing records (e.g., adding authors) then mode to "update" and 
+// run update.php on RIS file to update existing records
+
+$mode = 'update'; // Update existing records
+$mode = 'add'; // Add new records
 
 
 $file_handle = fopen($filename, "r");
@@ -205,7 +239,8 @@ while (!feof($file_handle))
 		if ($row_count == 0)
 		{
 			$headings = $row;	
-			//print_r($headings);
+			
+			// print_r($headings);
 			
 			
 		}
@@ -224,6 +259,7 @@ while (!feof($file_handle))
 					switch ($heading)
 					{
 						case 'ArticleTitle':
+						case 'Title':
 							$heading = 'title';
 							break;
 
@@ -251,11 +287,20 @@ while (!feof($file_handle))
 							
 
 						case 'Authors':
+						case 'Author':
 							$heading = 'authors';
 							break;
 
 						case 'Date':
 							$heading = 'date';
+							break;
+
+						case 'VolumeDate':
+							$heading = 'year';
+							break;
+
+						case 'DOI':
+							$heading = 'doi';
 							break;
 
 						// Naturalist's Miscc
@@ -276,7 +321,7 @@ while (!feof($file_handle))
 				
 				
 				
-					$obj->{$heading} = $v;
+					$obj->{$heading} = trim($v);
 				}
 			}
 		
@@ -302,6 +347,29 @@ while (!feof($file_handle))
 						$obj->issn = '0068-2306';
 						break;
 
+					case 'Bulletin of the British Museum (Natural History). Geology.':
+						$obj->issn = '0007-1471';
+						break;
+
+					case 'Bulletin of the Natural History Museum. Botany series.':
+						$obj->issn = '0968-0446';
+						break;
+						
+					case 'Bulletin of the British Museum (Natural History). Entomology. Supplement.':
+						$obj->issn = '0007-1501';
+						break;
+						
+					case 'Bulletin of the Natural History Museum. Geology series.':
+						$obj->issn = '0968-0462';
+						break;
+						
+					case 'Bulletin of the British Museum (Natural History). Mineralogy.':
+						$obj->issn = '0007-148X';
+						break;
+						
+					case 'Bulletin of the British Museum (Natural History). Zoology.':
+						$obj->issn = '0007-1498';
+						break;
 				
 					default:
 						break;
@@ -322,8 +390,50 @@ while (!feof($file_handle))
 
 			if (isset($obj->ArticleDate))
 			{
-				$dateTime = date_create_from_format('F d, Y', $obj->ArticleDate . ', ' . $obj->year);
-				$obj->date = date_format($dateTime, 'Y-m-d');
+			
+				if (preg_match('/[A-Z]\w+\s+\d+/', $obj->ArticleDate))
+				{			
+					$dateTime = date_create_from_format('F d, Y', $obj->ArticleDate . ', ' . $obj->year);
+					$obj->date = date_format($dateTime, 'Y-m-d');
+				}
+
+				if (preg_match('/\d+\s+[A-Z]\w+/', $obj->ArticleDate))
+				{			
+					$dateTime = date_create_from_format('d F, Y', $obj->ArticleDate . ', ' . $obj->year);
+					$obj->date = date_format($dateTime, 'Y-m-d');
+				}
+
+				if (preg_match('/^[0-9]{4}$/', $obj->ArticleDate))
+				{
+					$obj->year = $obj->ArticleDate;
+				}
+
+				if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $obj->ArticleDate))
+				{
+					$obj->date = $obj->ArticleDate;
+				}
+
+				if (preg_match('/^[0-9]{4}-[0-9]{2}$/', $obj->ArticleDate))
+				{
+					$obj->date = $obj->ArticleDate . '-00';
+				}
+			
+			}
+
+			if (isset($obj->{'Article Date'}))
+			{
+				if (preg_match('/[A-Z]\w+\s+\d+/', $obj->{'Article Date'}))
+				{			
+					$dateTime = date_create_from_format('F d, Y', $obj->{'Article Date'} . ', ' . $obj->year);
+					$obj->date = date_format($dateTime, 'Y-m-d');
+				}
+				
+				if (preg_match('/^[A-Z]\w+$/', $obj->{'Article Date'}))
+				{			
+					$dateTime = date_create_from_format('F, Y', $obj->{'Article Date'} . ', ' . $obj->year);
+					$obj->date = date_format($dateTime, 'Y-m-00');
+				}
+				
 			}
 
 
@@ -386,14 +496,60 @@ while (!feof($file_handle))
 				}
 				
 				$obj->journal = "The Naturalist's Miscellany";
+				$obj->journal = "A specimen of the botany of New Holland";
+				$obj->journal = "Zoology of New Holland";
+			}
+			
+			// Gould
+			if (isset($obj->StartPageBHLURL))
+			{
+				$obj->spage = $obj->StartPageBHLURL;
+				$obj->spage = str_replace('https://www.biodiversitylibrary.org/page/', '', $obj->spage );
+				$obj->spage = str_replace('https://wwwbiodiversitylibraryorg/page/', '', $obj->spage );
+
+				$obj->url = $obj->StartPageBHLURL;
+				$obj->url = str_replace('wwwbiodiversitylibraryorg', 'www.biodiversitylibrary.org', $obj->url);
+				$obj->url = str_replace('https', 'http', $obj->url);
+			
+				if (isset($obj->EndPageBHLURL))
+				{
+					$obj->epage = $obj->EndPageBHLURL;
+					
+					$obj->epage = str_replace('https://www.biodiversitylibrary.org/page/', '', $obj->epage );
+					$obj->epage = str_replace('https://wwwbiodiversitylibraryorg/page/', '', $obj->epage );
+
+				}
+				
+				// $obj->journal = "A monograph of the Macropodidae, or family of kangaroos";
+				// $obj->volume = 1; // fake but need this for BioStor
+				
+				$obj->journal = "The mammals of Australia";
+				$obj->journal = "The birds of Australia";
+				$obj->journal = "The mammals of Australia";
+			}
+			
+			
+			// BM
+			if (isset($obj->StartPageURL))
+			{
+				$obj->url = $obj->StartPageURL;
+				$obj->url = str_replace('https', 'http', $obj->url);
+			
 			}
 			
 			
 			
 			//print_r($obj);
 			
+			if ($mode == 'add') // by default add everything
+			{
+				$go = true;
+			}
 			
-			$go = true;
+			if ($mode == 'update') // by default don't update unless we have a BioStor ID
+			{
+				$go = false;
+			}
 			
 			if (isset($obj->ArticleID))
 			{
@@ -405,10 +561,24 @@ while (!feof($file_handle))
 				$go = false;
 			}
 			
+			if (!isset($obj->volume))
+			{
+				$obj->volume = 1;
+			}
 			
+			// If we are updating then make sure we have access to the BioStor id,
+			// if we are adding then suppress records that already exist
 			if (isset($obj->{'BioStor ID'}))
 			{
-				$go = false;
+				if ($mode == 'update')
+				{
+					$obj->url = 'https://biostor.org/reference/' . $obj->{'BioStor ID'};
+					$go = true;
+				}
+				if ($mode == 'add')
+				{
+					$go = false;
+				}
 			}
 			
 			if ($go)
